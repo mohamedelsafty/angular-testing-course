@@ -17,16 +17,15 @@ describe("CoursesService", () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         CoursesService,
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     });
-    httpTestingController = TestBed.inject(HttpTestingController);
-
-    coursesService = TestBed.inject(CoursesService);
+    (coursesService = TestBed.inject(CoursesService)),
+      (httpTestingController = TestBed.inject(HttpTestingController));
   });
 
   it("should retrieve all courses", () => {

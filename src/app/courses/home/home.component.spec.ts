@@ -30,6 +30,10 @@ describe("HomeComponent", () => {
     (course) => course.category == "BEGINNER"
   );
 
+  const advancedCourses = setupCourses().filter(
+    (course) => course.category == "ADVANCED"
+  );
+
   beforeEach(waitForAsync(() => {
     const coursesServiceSpy = jasmine.createSpyObj("CoursesService", [
       "findAllCourses",
@@ -54,6 +58,38 @@ describe("HomeComponent", () => {
 
     const tabs = el.queryAll(By.css(".mdc-tab"));
     expect(tabs.length).toBe(1, "Unexpected number of tabs found");
+  });
+
+  it("should display only advanced courses", () => {
+    coursesService.findAllCourses.and.returnValue(of(advancedCourses));
+    fixture.detectChanges();
+    const tabs = el.queryAll(By.css(".mdc-tab"));
+    expect(tabs.length).toBe(1, "Unexpected number of tabs found");
+  });
+
+  it("should display both tabs", () => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css(".mdc-tab"));
+    expect(tabs.length).toBe(2, "Expected to find 2 tabs");
+  });
+
+  it("should display advanced courses when tab clicked", (done: DoneFn) => {
+    coursesService.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css(".mdc-tab-lable"));
+    el.nativeElement.click(tabs[1]);
+    fixture.detectChanges();
+    setTimeout(() => {
+      const cardTitles = el.queryAll(By.css(".mat-card-title"));
+      expect(cardTitles.length).toBeGreaterThan(0, "Could not find titles");
+      expect(cardTitles[0].nativeElement.textContent).toContain(
+        "Angular Security Course"
+      );
+      done();
+    }, 500);
   });
 });
 
